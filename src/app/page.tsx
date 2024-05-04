@@ -1,5 +1,5 @@
 import FileUpload from "@/components/ui/FileUpload";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/ui/button";
 import { UserButton, auth } from "@clerk/nextjs";
 import { LogIn } from "lucide-react";
 import Link from "next/link";

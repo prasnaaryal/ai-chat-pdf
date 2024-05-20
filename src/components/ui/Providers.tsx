@@ -14,4 +14,5 @@ const Providers = ({children}: Props) => {
   )
 }
 
-export default Providers
+export default Providers;
+

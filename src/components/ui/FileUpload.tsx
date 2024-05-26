@@ -1,5 +1,5 @@
 "use client";
-import { uploadToS3 } from "@/lib/s3";
+import { uploadToS3 } from "@/lib/db/s3";
 import { useMutation,UseMutationResult } from "@tanstack/react-query";
 import { Inbox, Loader2 } from "lucide-react";
 import React from "react";
@@ -48,10 +48,10 @@ const FileUpload = () => {
         }
         mutate(data, {
           onSuccess: (data) => {
-            toast.success(data.message);
+            console.log(data);
           },
           onError: (err) => {
-            toast.error("Error creating chat")
+            toast.error("Something went wrong")
           },
         });
       } catch (error) {
@@ -75,9 +75,6 @@ const FileUpload = () => {
         <>
         {/* loading state */}
         <Loader2 className="h-10 w-10 text-blue-500 animate-spin"/>
-        <p className="mt-2 text-sm text-slate-400">
-          Spilling tea to GPT
-        </p>
 
         </>):(
           <>

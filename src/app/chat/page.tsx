@@ -12,10 +12,7 @@ const ChatInterface = () => {
   const { user } = useUser();
   const [messages, setMessages] = useState<
     Array<{ id: number; text: string | JSX.Element; sender: string }>
-  >([
-    { id: 1, text: "Hi", sender: "user" },
-    { id: 2, text: "Hello! How can I assist you today?", sender: "ai" },
-  ]);
+  >([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);

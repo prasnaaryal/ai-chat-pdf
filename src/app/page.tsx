@@ -1,13 +1,22 @@
+"use client";
+
 import UploadFile from "@/components/UploadFile";
 import { Button } from "@/components/ui/button";
-import { UserButton, auth } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
-export default async function Home() {
-  const { userId } = await auth();
+const Home = () => {
+  const { isSignedIn, userId } = useAuth();
   const isAuth = !!userId;
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileSelected = useCallback((file: File | null) => {
+    setSelectedFile(file);
+    // You can add more logic here if needed, for example, upload the file to the server
+  }, []);
 
   return (
     <div className="w-screen min-h-screen bg-gradient-to-r from-rose-100 to-teal-100">
@@ -23,13 +32,16 @@ export default async function Home() {
           </div>
 
           <p className="max-w-xl mt-1 text-lg text-slate-600">
-            Join millions of students, researchers and professionals to
+            Join millions of students, researchers, and professionals to
             instantly answer questions and understand research with AI
           </p>
 
           <div className="w-full mt-4">
             {isAuth ? (
-              <UploadFile/>
+              <UploadFile
+                onFileSelected={handleFileSelected}
+                initialFile={null}
+              />
             ) : (
               <Link href="/sign-in">
                 <Button>
@@ -43,4 +55,6 @@ export default async function Home() {
       </div>
     </div>
   );
-}
+};
+
+export default Home;

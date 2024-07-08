@@ -1,27 +1,45 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { AiOutlineFilePdf } from "react-icons/ai";
 
-const UploadFile: React.FC = () => {
-  const [file, setFile] = useState<File | null>(null);
+interface DropzoneProps {
+  onFileSelected: (file: File | null) => void;
+  initialFile?: File | null;
+}
+
+const UploadFile: React.FC<DropzoneProps> = ({
+  onFileSelected,
+  initialFile,
+}) => {
+  const [file, setFile] = useState<File | null>(initialFile || null);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
       setFile(acceptedFiles[0]);
+      onFileSelected(acceptedFiles[0]);
     },
+    onFileDialogCancel: () => onFileSelected(null),
     accept: {
+      "image/*": [],
       "application/pdf": [],
     },
   });
+
+  useEffect(() => {
+    if (initialFile) {
+      setFile(initialFile);
+      onFileSelected(initialFile);
+    }
+  }, [initialFile, onFileSelected]);
 
   return (
     <div className="w-full">
       <div
         {...getRootProps()}
-        className="flex items-center justify-center h-48 w-full bg-white rounded-lg cursor-pointer"
+        className="flex items-center justify-center h-48 w-full bg-silver cursor-pointer"
       >
         <input {...getInputProps()} />
         {isDragActive ? (

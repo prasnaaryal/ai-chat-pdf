@@ -34,40 +34,6 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Sidebar Menu Items */}
-      <div className={`flex-1 flex-col`}>
-        <Link
-          href="/ai/chat"
-          className={`py-4 flex justify-start pl-4 items-center w-full focus:outline-none hover:bg-gray-200 transition duration-300`}
-        >
-          <AiOutlineSearch className="text-gray-600" />
-          <span className="text-gray-800 text-sm font-medium pl-2">
-            Discover
-          </span>
-        </Link>
-
-        <Link
-          href="/ai/upload"
-          className={`py-4 flex justify-start pl-4 items-center w-full focus:outline-none hover:bg-gray-200 transition duration-300`}
-        >
-          <AiOutlineBook className="text-gray-600" />
-
-          <span className="text-gray-800 text-sm font-medium pl-2">
-            Library
-          </span>
-        </Link>
-
-        <Link
-          href="/ai/users"
-          className={`py-4 flex justify-start pl-4 items-center w-full focus:outline-none hover:bg-gray-200 transition duration-300`}
-        >
-          <PiUsersLight className="text-gray-600" />
-          <span className="text-gray-800 text-sm font-medium pl-2">
-            User Management
-          </span>
-        </Link>
-      </div>
-
       <div className="absolute bottom-4 flex flex-col gap-10">
         <div
           className={`px-4 py-2 bg-gray-100 mx-4 flex flex-col gap-3 rounded-lg text-center block`}

@@ -1,14 +1,16 @@
-"use client";
+'use client';
 
 import UploadFile from "@/components/UploadFile";
 import { Button } from "@/components/ui/button";
-import { UserButton, useAuth } from "@clerk/nextjs";
+import { UserButton, useAuth, useUser } from "@clerk/nextjs";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
 import { useState, useCallback } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Home = () => {
   const { isSignedIn, userId } = useAuth();
+  const { user, isLoaded } = useUser();
   const isAuth = !!userId;
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -24,7 +26,11 @@ const Home = () => {
         <div className="flex flex-col gap-4 items-center text-center">
           <div className="flex gap-4 items-center">
             <h1 className="text-5xl font-semibold">Chat with any PDF</h1>
-            <UserButton afterSignOutUrl="/" />
+            {isLoaded ? (
+              <UserButton afterSignOutUrl="/" />
+            ) : (
+              <Skeleton className="w-10 h-10 rounded-full" />
+            )}
           </div>
 
           <div className="flex mt-2">

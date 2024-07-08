@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
@@ -39,7 +39,7 @@ const UploadFile: React.FC<DropzoneProps> = ({
     <div className="w-full">
       <div
         {...getRootProps()}
-        className="flex items-center justify-center h-48 w-full bg-silver cursor-pointer"
+        className="flex items-center justify-center h-48 w-full bg-white shadow-md rounded-lg cursor-pointer "
       >
         <input {...getInputProps()} />
         {isDragActive ? (

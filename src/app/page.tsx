@@ -28,7 +28,9 @@ const Home = () => {
           </div>
 
           <div className="flex mt-2">
-            <Button>Go to Chats</Button>
+            <Link href="/chat">
+              <Button>Go to Chats</Button>
+            </Link>
           </div>
 
           <p className="max-w-xl mt-1 text-lg text-slate-600">

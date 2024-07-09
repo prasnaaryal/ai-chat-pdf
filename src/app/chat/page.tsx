@@ -2,21 +2,27 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { AiOutlineSend } from "react-icons/ai";
+import { AiOutlineSend, AiOutlineFilePdf } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import openAIImage from "../../../public/assets/images/openAI.png";
 import TypingSVG from "../../../public/assets/images/typing.svg";
+import { useFile } from "@/contexts/FileContext"; // Adjust the path as necessary
 
 const ChatInterface = () => {
   const { user } = useUser();
+  const { file } = useFile();
   const [messages, setMessages] = useState<
     Array<{ id: number; text: string | JSX.Element; sender: string }>
-  >([]);
+  >(file ? [{ id: 1, text: `Uploaded file: ${file.name}`, sender: "user" }] : []);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    console.log("File in ChatInterface:", file);
+  }, [file]);
 
   const TypeLoader: React.FC = () => {
     return <Image src={TypingSVG} className="w-6 h-6" alt="Typing..." />;
@@ -109,6 +115,14 @@ const ChatInterface = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
+      {file && (
+        <div className="flex justify-center p-4 bg-white shadow-md rounded-lg my-4">
+          <div className="flex items-center space-x-2">
+            <AiOutlineFilePdf className="w-8 h-8 text-primary" />
+            <p>{file.name}</p>
+          </div>
+        </div>
+      )}
       <div
         ref={messagesContainerRef}
         className="flex-1 overflow-auto flex flex-col-reverse"

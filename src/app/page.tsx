@@ -29,7 +29,7 @@ const Home = () => {
             {isLoaded ? (
               <UserButton afterSignOutUrl="/" />
             ) : (
-              <Skeleton className="w-10 h-10 rounded-full" />
+              <Skeleton className="w-8 h-8 rounded-full" />
             )}
           </div>
 

@@ -14,7 +14,22 @@ const ChatInterface = () => {
   const { file } = useFile();
   const [messages, setMessages] = useState<
     Array<{ id: number; text: string | JSX.Element; sender: string }>
-  >(file ? [{ id: 1, text: `Uploaded file: ${file.name}`, sender: "user" }] : []);
+  >(
+    file
+      ? [
+          {
+            id: 1,
+            text: (
+              <div className="flex items-center justify-center space-x-3 p-4 bg-white shadow-md rounded-lg">
+                <AiOutlineFilePdf className="w-8 h-8 text-primary" />
+                <p>{file.name}</p>
+              </div>
+            ),
+            sender: "user",
+          },
+        ]
+      : []
+  );
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -115,14 +130,14 @@ const ChatInterface = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {file && (
+      {/* {file && (
         <div className="flex justify-center p-4 bg-white shadow-md rounded-lg my-4">
           <div className="flex items-center space-x-2">
             <AiOutlineFilePdf className="w-8 h-8 text-primary" />
             <p>{file.name}</p>
           </div>
         </div>
-      )}
+      )} */}
       <div
         ref={messagesContainerRef}
         className="flex-1 overflow-auto flex flex-col-reverse"

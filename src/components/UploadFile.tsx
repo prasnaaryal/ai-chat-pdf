@@ -5,9 +5,17 @@ import { useDropzone } from "react-dropzone";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { useRouter } from "next/navigation";
-import { useFile } from "@/contexts/FileContext"; // Adjust the path as necessary
+import { useFile } from "@/contexts/FileContext";
 
-const UploadFile: React.FC = () => {
+interface DropzoneProps {
+  onFileSelected: (file: File | null) => void;
+  initialFile?: File | null;
+}
+
+const UploadFile: React.FC<DropzoneProps> = ({
+  onFileSelected,
+  initialFile,
+}) => {
   const { setFile } = useFile();
   const router = useRouter();
 

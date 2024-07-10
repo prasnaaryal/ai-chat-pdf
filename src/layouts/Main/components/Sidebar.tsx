@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   AiOutlineSearch,
   AiOutlineBook,
   AiOutlineSetting,
-} from 'react-icons/ai';
-import { PiUsersLight } from 'react-icons/pi';
-import { LuLogOut } from 'react-icons/lu';
-import { UserButton, useUser, SignOutButton } from '@clerk/nextjs';
-import { Skeleton } from '@/components/ui/skeleton'; // Adjust the path as necessary
+} from "react-icons/ai";
+import { PiUsersLight } from "react-icons/pi";
+import { LuLogOut } from "react-icons/lu";
+import { UserButton, useUser, SignOutButton } from "@clerk/nextjs";
+import { Skeleton } from "@/components/ui/skeleton"; // Adjust the path as necessary
 
 const Sidebar = () => {
   const { user, isLoaded } = useUser();
@@ -39,7 +39,9 @@ const Sidebar = () => {
         <div
           className={`px-4 py-2 bg-gray-100 mx-4 flex flex-col gap-3 rounded-lg text-center block`}
         >
-          <span className="text-gray-800 text-sm font-medium">Upgrade Plan</span>
+          <span className="text-gray-800 text-sm font-medium">
+            Upgrade Plan
+          </span>
           <p className="text-gray-600 text-xs">
             Upgrade for image upload, smarter AI, and more Copilot.
           </p>
@@ -69,7 +71,6 @@ const Sidebar = () => {
                 <Skeleton className="rounded-full w-10 h-10" />
                 <div className="flex flex-col space-y-2">
                   <Skeleton className="h-4 w-36" />
-                
                 </div>
               </div>
             )}
@@ -77,13 +78,6 @@ const Sidebar = () => {
 
           {isLoaded && (
             <DropdownMenuContent className="w-56">
-              <DropdownMenuItem asChild>
-                <Link href="/ai/settings" className="dropdown-link">
-                  <div className="w-full flex items-center gap-4">
-                    <AiOutlineSetting /> Settings
-                  </div>
-                </Link>
-              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <SignOutButton>
                   <div className="w-full flex items-center gap-4">

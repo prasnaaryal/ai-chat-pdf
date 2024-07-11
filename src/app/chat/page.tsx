@@ -1,13 +1,17 @@
+// src/app/chat/page.tsx
+
+// Ensure to use "use client" to render this component on the client side
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { AiOutlineSend, AiOutlineFilePdf } from "react-icons/ai";
+import { GoPaperclip } from "react-icons/go";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import openAIImage from "../../../public/assets/images/openAI.png";
 import TypingSVG from "../../../public/assets/images/typing.svg";
-import { useFile } from "@/contexts/FileContext"; // Adjust the path as necessary
+import { useFile } from "@/contexts/FileContext";
 
 const ChatInterface = () => {
   const { user } = useUser();
@@ -34,6 +38,11 @@ const ChatInterface = () => {
   const [loading, setLoading] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const [isFileUploaded, setIsFileUploaded] = useState(file !== null);
+
+  useEffect(() => {
+    setIsFileUploaded(file !== null);
+  }, [file]);
 
   useEffect(() => {
     console.log("File in ChatInterface:", file);
@@ -128,16 +137,28 @@ const ChatInterface = () => {
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFile = e.target.files?.[0];
+    if (uploadedFile) {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: prevMessages.length + 1,
+          text: (
+            <div className="flex items-center justify-center space-x-3 p-4 bg-white shadow-md rounded-lg">
+              <AiOutlineFilePdf className="w-8 h-8 text-primary" />
+              <p>{uploadedFile.name}</p>
+            </div>
+          ),
+          sender: "user",
+        },
+      ]);
+      setIsFileUploaded(true);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* {file && (
-        <div className="flex justify-center p-4 bg-white shadow-md rounded-lg my-4">
-          <div className="flex items-center space-x-2">
-            <AiOutlineFilePdf className="w-8 h-8 text-primary" />
-            <p>{file.name}</p>
-          </div>
-        </div>
-      )} */}
       <div
         ref={messagesContainerRef}
         className="flex-1 overflow-auto flex flex-col-reverse"
@@ -171,20 +192,40 @@ const ChatInterface = () => {
       </div>
       <div className="py-4 px-40 border-t border-gray-200">
         <form onSubmit={sendMessage} className="flex items-center gap-2">
-          <textarea
-            ref={textAreaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onInput={handleInput}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg resize-none overflow-hidden"
-            placeholder="Send a message"
-            rows={1}
-            style={{ minHeight: "38px" }}
-          />
-          <Button type="submit" disabled={loading}>
-            <AiOutlineSend />
-          </Button>
+          <div className="relative flex-1">
+            <textarea
+              ref={textAreaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onInput={handleInput}
+              className="w-full h-10 p-4 pl-12 pr-12 border border-gray-300 rounded-full resize-none overflow-hidden bg-gray-200 placeholder-gray-500 text-gray-900 focus:outline-none"
+              placeholder="Message ChatGPT"
+              rows={1}
+              style={{ minHeight: "38px" }}
+            />
+            { !isFileUploaded && (
+              <label
+                htmlFor="file-upload"
+                className="absolute inset-y-0 left-0 flex items-center pl-4 cursor-pointer"
+              >
+                <GoPaperclip className="w-6 h-6 text-gray-500 hover:text-gray-700" />
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </label>
+            )}
+            <Button
+              type="submit"
+              className="absolute inset-y-0 right-0 mt-1 mr-2 bg-gray-700 hover:bg-gray-800 text-white rounded-full w-8 h-8 flex items-center justify-center"
+              disabled={loading}
+            >
+              <AiOutlineSend className="w-5 h-5" />
+            </Button>
+          </div>
         </form>
         <p className="text-xs text-center text-slate-500 mt-4">
           QuickGPT can make mistakes. Consider checking important information.

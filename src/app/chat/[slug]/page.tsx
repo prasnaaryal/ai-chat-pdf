@@ -1,16 +1,12 @@
-// src/app/chat/page.tsx
-
-// Ensure to use "use client" to render this component on the client side
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { AiOutlineSend, AiOutlineFilePdf } from "react-icons/ai";
-import { GoPaperclip } from "react-icons/go";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
-import openAIImage from "../../../public/assets/images/openAI.png";
-import TypingSVG from "../../../public/assets/images/typing.svg";
+import openAIImage from "../../../../public/assets/images/openAI.png";
+import TypingSVG from "../../../../public/assets/images/typing.svg";
 import { useFile } from "@/contexts/FileContext";
 
 const ChatInterface = () => {

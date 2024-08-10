@@ -3,28 +3,17 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
 import { IoCloudUploadOutline } from "react-icons/io5";
-import { AiOutlineFilePdf } from "react-icons/ai";
-import { useRouter } from "next/navigation";
-import { useFile } from "@/contexts/FileContext";
 
 interface DropzoneProps {
   onFileSelected: (file: File | null) => void;
-  initialFile?: File | null;
 }
 
-const UploadFile: React.FC<DropzoneProps> = ({
-  onFileSelected,
-  initialFile,
-}) => {
-  const { setFile } = useFile();
-  const router = useRouter();
-
+const UploadFile: React.FC<DropzoneProps> = ({ onFileSelected }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
       const uploadedFile = acceptedFiles[0];
       console.log("File uploaded:", uploadedFile);
-      setFile(uploadedFile);
-      router.push("/chat");
+      onFileSelected(uploadedFile); // Pass the file to the parent component's handler
     },
     accept: {
       "application/pdf": [],

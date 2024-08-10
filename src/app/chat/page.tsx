@@ -199,8 +199,8 @@ const ChatInterface = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               onInput={handleInput}
-              className="w-full h-10 p-4 pl-12 pr-12 border border-gray-300 rounded-full resize-none overflow-hidden bg-gray-200 placeholder-gray-500 text-gray-900 focus:outline-none"
-              placeholder="Message ChatGPT"
+              className="w-full h-10 py-4 pl-12 pr-12 border border-gray-300 rounded-full resize-none overflow-hidden bg-gray-200 placeholder-gray-500 text-gray-900 focus:outline-none"
+              placeholder="Message ChatPDF"
               rows={1}
               style={{ minHeight: "38px" }}
             />

@@ -228,7 +228,7 @@ const ChatInterface = () => {
           </div>
         </form>
         <p className="text-xs text-center text-slate-500 mt-4">
-          QuickGPT can make mistakes. Consider checking important information.
+          ChatPDF can make mistakes. Consider checking important information.
         </p>
       </div>
     </div>

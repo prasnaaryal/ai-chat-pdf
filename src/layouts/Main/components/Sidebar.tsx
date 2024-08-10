@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,18 +9,37 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import {
-  AiOutlineSearch,
-  AiOutlineBook,
-  AiOutlineSetting,
-} from "react-icons/ai";
-import { PiUsersLight } from "react-icons/pi";
 import { LuLogOut } from "react-icons/lu";
-import { UserButton, useUser, SignOutButton } from "@clerk/nextjs";
+import { useUser, SignOutButton } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton"; // Adjust the path as necessary
+import axiosConfig from "@/config/axios";
 
 const Sidebar = () => {
   const { user, isLoaded } = useUser();
+  const [chats, setChats] = useState<{ id: number; title: string }[]>([]);
+  const [activeChatId, setActiveChatId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await axiosConfig.get("/chats/");
+        setChats(response.data);
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+      }
+    };
+
+    fetchChats();
+
+    // Extracting the id from the URL
+    const currentPath = window.location.pathname;
+    const currentChatId = parseInt(currentPath.split("/chat/")[1]);
+    setActiveChatId(currentChatId);
+  }, []);
+
+  const handleChatClick = (chatId: number) => {
+    setActiveChatId(chatId); // Update the active chat ID
+  };
 
   return (
     <div
@@ -30,14 +48,40 @@ const Sidebar = () => {
       {/* Sidebar Header */}
       <div className="p-4 flex justify-between items-center border-b">
         <div className="flex items-center space-x-2">
-          {/* Replace with your logo */}
           <span className="font-bold text-xl">AI Chat</span>
         </div>
       </div>
 
-      <div className="absolute bottom-4 flex flex-col gap-10">
+      {/* Chat History Section */}
+      <div className="p-4 h-[55vh] overflow-auto">
+        <ul className="space-y-1">
+          {chats
+            .sort((a, b) => b.id - a.id)
+            .map((chat) => (
+              <li key={chat.id}>
+                <Link href={`/chat/${chat.id}`}>
+                  <Button
+                    variant={"ghost"}
+                    className={`${
+                      activeChatId === chat.id
+                        ? "bg-gray-200"
+                        : "hover:bg-gray-300"
+                    } w-full flex justify-start h-9 rounded font-normal`}
+                    onClick={() => handleChatClick(chat.id)}
+                  >
+                    {chat.title.length > 20
+                      ? `${chat.title.substring(0, 20)}...`
+                      : chat.title}
+                  </Button>
+                </Link>
+              </li>
+            ))}
+        </ul>
+      </div>
+
+      <div className="absolute bottom-4 flex flex-col gap-10 w-full">
         <div
-          className={`px-4 py-2 bg-gray-100 mx-4 flex flex-col gap-3 rounded-lg text-center block`}
+          className={`px-4 py-2 bg-gray-100 mx-4 flex flex-col gap-3 rounded-lg text-center`}
         >
           <span className="text-gray-800 text-sm font-medium">
             Upgrade Plan

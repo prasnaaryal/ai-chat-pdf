@@ -192,38 +192,20 @@ const ChatInterface = () => {
       </div>
       <div className="py-4 px-40 border-t border-gray-200">
         <form onSubmit={sendMessage} className="flex items-center gap-2">
-          <div className="relative flex-1">
+          <div className="relative flex w-full">
             <textarea
               ref={textAreaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               onInput={handleInput}
-              className="w-full h-10 py-4 pl-12 pr-12 border border-gray-300 rounded-full resize-none overflow-hidden bg-gray-200 placeholder-gray-500 text-gray-900 focus:outline-none"
-              placeholder="Message ChatPDF"
+              className="flex-1 w-full px-4 py-2 border border-gray-300 rounded-lg resize-none overflow-hidden"
+              placeholder="Send a message"
               rows={1}
               style={{ minHeight: "38px" }}
             />
-            { !isFileUploaded && (
-              <label
-                htmlFor="file-upload"
-                className="absolute inset-y-0 left-0 flex items-center pl-4 cursor-pointer"
-              >
-                <GoPaperclip className="w-6 h-6 text-gray-500 hover:text-gray-700" />
-                <input
-                  id="file-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
-              </label>
-            )}
-            <Button
-              type="submit"
-              className="absolute inset-y-0 right-0 mt-1 mr-2 bg-gray-700 hover:bg-gray-800 text-white rounded-full w-8 h-8 flex items-center justify-center"
-              disabled={loading}
-            >
-              <AiOutlineSend className="w-5 h-5" />
+            <Button type="submit" disabled={loading}>
+              <AiOutlineSend />
             </Button>
           </div>
         </form>

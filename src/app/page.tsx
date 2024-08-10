@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import UploadFile from "@/components/UploadFile";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ const Home = () => {
           </div>
 
           <div className="flex mt-2">
-            <Link href="/chat">
+            <Link href="/upload">
               <Button>Go to Chats</Button>
             </Link>
           </div>
@@ -45,12 +45,7 @@ const Home = () => {
           </p>
 
           <div className="w-full mt-4">
-            {isAuth ? (
-              <UploadFile
-                onFileSelected={handleFileSelected}
-                initialFile={null}
-              />
-            ) : (
+            {isAuth ? null : (
               <Link href="/sign-in">
                 <Button>
                   Login to get Started!

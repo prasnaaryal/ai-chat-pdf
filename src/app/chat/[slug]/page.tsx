@@ -8,10 +8,19 @@ import { useUser } from "@clerk/nextjs";
 import openAIImage from "../../../../public/assets/images/openAI.png";
 import TypingSVG from "../../../../public/assets/images/typing.svg";
 import { useFile } from "@/contexts/FileContext";
+import axiosConfig from "@/config/axios";
 
-const ChatInterface = () => {
+type ChatInterfaceProps = {
+  params: {
+    slug: string; // Adjust according to your dynamic route
+  };
+};
+
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
   const { user } = useUser();
   const { file } = useFile();
+  const chatId = params.slug; // Use the slug from params directly
+
   const [messages, setMessages] = useState<
     Array<{ id: number; text: string | JSX.Element; sender: string }>
   >(
@@ -77,25 +86,67 @@ const ChatInterface = () => {
         textAreaRef.current.style.height = "38px";
       }
 
-      // Simulate an asynchronous action (e.g., API call) with a delay of 2500ms
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+      try {
+        // Make the API call to /conversation/ with chat_id and question
+        const response = await axiosConfig.post("/conversation/", {
+          chat_id: Number(chatId),
+          question: input,
+        });
 
-      // Replace the typing message with the actual AI response
-      const aiResponse = {
-        id: messages.length + 2,
-        text: "Hello! How can I assist you today?", // Replace this with the actual AI response
-        sender: "ai",
-      };
-
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages];
-        updatedMessages.pop(); // Remove the typing message
-        updatedMessages.push(aiResponse); // Add the AI response
-        return updatedMessages;
-      });
+        // Simulate typewriter effect
+        const aiResponse = response.data.answer || "No response received.";
+        typeWriterEffect(aiResponse);
+      } catch (error) {
+        console.error("Error during conversation:", error);
+        // Handle the error as needed (e.g., show an error message)
+      }
 
       setLoading(false);
     }
+  };
+
+  const typeWriterEffect = (text: string) => {
+    let index = 0;
+    const interval = 50; // Adjust the speed of the typewriter effect
+    const typingMessage = {
+      id: messages.length + 2,
+      text: "",
+      sender: "ai",
+    };
+
+    setMessages((prevMessages) => {
+      const updatedMessages = [...prevMessages];
+      updatedMessages.pop(); // Remove the typing message
+      updatedMessages.push(typingMessage); // Add the typing effect message
+      return updatedMessages;
+    });
+
+    const type = () => {
+      if (index < text.length) {
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages];
+          const currentMessage = updatedMessages[updatedMessages.length - 1];
+          currentMessage.text = (
+            <span>
+              {text.slice(0, index + 1)}
+              <span className="blinking-cursor">|</span>
+            </span>
+          );
+          return updatedMessages;
+        });
+        index++;
+        setTimeout(type, interval);
+      } else {
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages];
+          const currentMessage = updatedMessages[updatedMessages.length - 1];
+          currentMessage.text = text; // Finalize the message
+          return updatedMessages;
+        });
+      }
+    };
+
+    type();
   };
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -130,26 +181,6 @@ const ChatInterface = () => {
       ));
     } else {
       return text; // Return JSX element as is
-    }
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = e.target.files?.[0];
-    if (uploadedFile) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: prevMessages.length + 1,
-          text: (
-            <div className="flex items-center justify-center space-x-3 p-4 bg-white shadow-md rounded-lg">
-              <AiOutlineFilePdf className="w-8 h-8 text-primary" />
-              <p>{uploadedFile.name}</p>
-            </div>
-          ),
-          sender: "user",
-        },
-      ]);
-      setIsFileUploaded(true);
     }
   };
 

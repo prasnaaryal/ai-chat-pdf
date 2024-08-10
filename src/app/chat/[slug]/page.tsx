@@ -23,22 +23,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
 
   const [messages, setMessages] = useState<
     Array<{ id: number; text: string | JSX.Element; sender: string }>
-  >(
-    file
-      ? [
-          {
-            id: 1,
-            text: (
-              <div className="flex items-center justify-center space-x-3 p-4 bg-white shadow-md rounded-lg">
-                <AiOutlineFilePdf className="w-8 h-8 text-primary" />
-                <p>{file.name}</p>
-              </div>
-            ),
-            sender: "user",
-          },
-        ]
-      : []
-  );
+  >([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -52,6 +37,49 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
   useEffect(() => {
     console.log("File in ChatInterface:", file);
   }, [file]);
+
+  useEffect(() => {
+    // Fetch the initial chat history when the component mounts
+    const fetchChatHistory = async () => {
+      try {
+        const response = await axiosConfig.get(
+          `/conversation/?chat_id=${chatId}`
+        );
+        const chatHistory = response.data.flatMap((msg: any) => [
+          {
+            id: msg.id * 2 - 1,
+            text: msg.question,
+            sender: "user",
+          },
+          {
+            id: msg.id * 2,
+            text: msg.answer,
+            sender: "ai",
+          },
+        ]);
+
+        if (file) {
+          const fileMessage = {
+            id: 0,
+            text: (
+              <div className="flex items-center justify-center space-x-3 p-4 bg-white shadow-md rounded-lg">
+                <AiOutlineFilePdf className="w-8 h-8 text-primary" />
+                <p>{file.name}</p>
+              </div>
+            ),
+            sender: "user",
+          };
+          setMessages([fileMessage, ...chatHistory]);
+        } else {
+          setMessages(chatHistory);
+        }
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+      }
+    };
+
+    fetchChatHistory();
+  }, [chatId, file]);
 
   const TypeLoader: React.FC = () => {
     return <Image src={TypingSVG} className="w-6 h-6" alt="Typing..." />;

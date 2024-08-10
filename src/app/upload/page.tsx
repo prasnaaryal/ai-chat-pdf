@@ -16,7 +16,7 @@ const Upload = () => {
 
         try {
           const formData = new FormData();
-          formData.append("files", file, "application/pdf"); // Append the file with the correct content type
+          formData.append("files", file, file.name); // Append the file with the file's original name
 
           console.log("FormData prepared:", formData); // Debugging log
 

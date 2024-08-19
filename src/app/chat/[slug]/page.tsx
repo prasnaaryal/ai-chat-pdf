@@ -50,9 +50,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
-        const response = await axiosConfig.get(
-          `/all-chats/?chat_id=${chatId}`
-        );
+        const response = await axiosConfig.get(`/all-chats/?chat_id=${chatId}`);
         const chatHistory = response.data.flatMap((msg: any) => [
           {
             id: msg.id * 2 - 1,
@@ -229,7 +227,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
     <div className="flex flex-col h-screen bg-gray-100 relative">
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-auto flex flex-col-reverse"
+        className="flex-1 overflow-auto flex flex-col-reverse pt-20"
       >
         {[...messages].reverse().map((message) => (
           <div key={message.id}>
@@ -292,7 +290,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              onInput={handleInput} 
+              onInput={handleInput}
               className="flex-1 w-full px-4 py-2 border border-gray-300 rounded-lg resize-none overflow-hidden"
               placeholder="Send a message"
               rows={1}

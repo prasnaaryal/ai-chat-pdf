@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation"; // Import useSearchParams
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { AiOutlineSend, AiOutlineFilePdf } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
@@ -10,21 +10,23 @@ import openAIImage from "../../../../public/assets/images/openAI.png";
 import TypingSVG from "../../../../public/assets/images/typing.svg";
 import { useFile } from "@/contexts/FileContext";
 import axiosConfig from "@/config/axios";
+import { useSpeechSynthesis } from "react-speech-kit";
+import { CiVolumeHigh } from "react-icons/ci";
+import { IoStopCircleOutline } from "react-icons/io5";
 
 type ChatInterfaceProps = {
   params: {
-    slug: string; // Adjust according to your dynamic route
+    slug: string;
   };
 };
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
   const { user } = useUser();
   const { file } = useFile();
-  const chatId = params.slug; // Use the slug from params directly
-  const searchParams = useSearchParams(); // Get search params from URL
+  const chatId = params.slug;
+  const searchParams = useSearchParams();
 
-  // Extract the 'name' parameter from the URL
-  const fileName = searchParams.get("name") || "ChatPDF"; // Default to "ChatPDF" if name is not present
+  const fileName = searchParams.get("name") || "ChatPDF";
 
   const [messages, setMessages] = useState<
     Array<{ id: number; text: string | JSX.Element; sender: string }>
@@ -35,6 +37,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isFileUploaded, setIsFileUploaded] = useState(file !== null);
 
+  const { speak, cancel, speaking } = useSpeechSynthesis(); // Use speech synthesis
+
   useEffect(() => {
     setIsFileUploaded(file !== null);
   }, [file]);
@@ -44,7 +48,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
   }, [file]);
 
   useEffect(() => {
-    // Fetch the initial chat history when the component mounts
     const fetchChatHistory = async () => {
       try {
         const response = await axiosConfig.get(
@@ -120,18 +123,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
       }
 
       try {
-        // Make the API call to /conversation/ with chat_id and question
         const response = await axiosConfig.post("/conversation/", {
           chat_id: Number(chatId),
           question: input,
         });
 
-        // Simulate typewriter effect
         const aiResponse = response.data.answer || "No response received.";
         typeWriterEffect(aiResponse);
       } catch (error) {
         console.error("Error during conversation:", error);
-        // Handle the error as needed (e.g., show an error message)
       }
 
       setLoading(false);
@@ -140,7 +140,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
 
   const typeWriterEffect = (text: string) => {
     let index = 0;
-    const interval = 50; // Adjust the speed of the typewriter effect
+    const interval = 50;
     const typingMessage = {
       id: messages.length + 2,
       text: "",
@@ -149,8 +149,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
 
     setMessages((prevMessages) => {
       const updatedMessages = [...prevMessages];
-      updatedMessages.pop(); // Remove the typing message
-      updatedMessages.push(typingMessage); // Add the typing effect message
+      updatedMessages.pop();
+      updatedMessages.push(typingMessage);
       return updatedMessages;
     });
 
@@ -173,7 +173,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
         setMessages((prevMessages) => {
           const updatedMessages = [...prevMessages];
           const currentMessage = updatedMessages[updatedMessages.length - 1];
-          currentMessage.text = text; // Finalize the message
+          currentMessage.text = text;
           return updatedMessages;
         });
       }
@@ -213,8 +213,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
         </React.Fragment>
       ));
     } else {
-      return text; // Return JSX element as is
+      return text;
     }
+  };
+
+  const handlePlaySpeech = (text: string) => {
+    speak({ text });
+  };
+
+  const handleStopSpeech = () => {
+    cancel();
   };
 
   return (
@@ -245,6 +253,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
                 <div className="p-2 rounded text-black whitespace-pre-wrap">
                   {formatMessageText(message.text)}
                 </div>
+                {message.sender === "ai" &&
+                  typeof message.text === "string" && (
+                    <div className="flex space-x-2 mt-2">
+                      {!speaking ? (
+                        <Button
+                          variant="outline"
+                          size={"icon"}
+                          onClick={() =>
+                            handlePlaySpeech(message.text as string)
+                          }
+                          className="bg-transparent"
+                        >
+                          <CiVolumeHigh className="size-5" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size={"icon"}
+                          onClick={handleStopSpeech}
+                          className="bg-transparent"
+                        >
+                          <IoStopCircleOutline className="size-5" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
               </div>
             </div>
           </div>
@@ -274,9 +308,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
         </p>
       </div>
 
-      <div className="absolute top-0 p-6 bg-white/50 shadow w-full flex justify-center">
-        <p className="text-xl font-semibold">{fileName}</p>{" "}
-        {/* Show the 'name' parameter from the URL */}
+      <div className="absolute top-0 p-6 bg-white shadow w-full flex justify-center">
+        <p className="text-xl font-semibold">{fileName}</p>
       </div>
     </div>
   );

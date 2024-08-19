@@ -3,7 +3,7 @@
 import React, { useCallback } from "react";
 import UploadFile from "@/components/UploadFile";
 import { useFile } from "@/contexts/FileContext";
-import axiosConfig from "@/config/axios"; // Import axiosConfig with HTTPS enforcement
+import axiosConfig from "@/config/axios";
 
 const Upload = () => {
   const { setFile } = useFile();
@@ -25,7 +25,7 @@ const Upload = () => {
 
           // Call the API to generate the presigned URL
           const presignedResponse = await axiosConfig.post(
-            "/generate-presigned-url/", // Use the base URL with HTTPS
+            "/generate-presigned-url/",
             payload
           );
 
@@ -38,15 +38,21 @@ const Upload = () => {
             // Upload the file to S3 using the presigned URL
             const uploadResponse = await axiosConfig.put(url, file, {
               headers: {
-                "Content-Type": file.type, // Set the correct content type for S3
+                "Content-Type": file.type,
               },
             });
 
             console.log("File uploaded successfully:", uploadResponse.status); // Debugging log
 
             if (uploadResponse.status === 200) {
-              // Construct the query string manually to prevent encoding issues
-              const requestUrl = `/chat/?file_key=${key}`; // Use the key directly without URLSearchParams
+              // Remove the 'upload/' prefix from the key
+              const cleanedKey = key.replace(/^uploads\//, "");
+
+              console.log("Cleaned Key:", cleanedKey); // Debugging log
+
+              // Construct the request URL for the chat creation
+              const requestUrl = `/chat/?file_key=${key}`;
+
               console.log("Request URL:", requestUrl); // Debugging log
 
               // Send the file_key as a query parameter in the /chat POST request
@@ -60,9 +66,9 @@ const Upload = () => {
               } else {
                 console.log("Chat created:", chatResponse.data); // Debugging log
 
-                // Redirect to the chat page using the id from the response
+                // Redirect to the chat page using the id and cleaned key from the response
                 const chatId = chatResponse.data.id;
-                window.location.href = `/chat/${chatId}`;
+                window.location.href = `/chat/${chatId}?name=${cleanedKey}`;
               }
             } else {
               console.error("File upload failed");
@@ -72,7 +78,6 @@ const Upload = () => {
           }
         } catch (error) {
           console.error("Error during the file upload process:", error);
-          // Handle error (e.g., show a notification to the user)
         }
       } else {
         console.warn("No file selected"); // Debugging log

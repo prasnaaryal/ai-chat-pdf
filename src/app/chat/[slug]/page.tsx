@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation"; // Import useSearchParams
 import Image from "next/image";
 import { AiOutlineSend, AiOutlineFilePdf } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
   const { user } = useUser();
   const { file } = useFile();
   const chatId = params.slug; // Use the slug from params directly
+  const searchParams = useSearchParams(); // Get search params from URL
+
+  // Extract the 'name' parameter from the URL
+  const fileName = searchParams.get("name") || "ChatPDF"; // Default to "ChatPDF" if name is not present
 
   const [messages, setMessages] = useState<
     Array<{ id: number; text: string | JSX.Element; sender: string }>
@@ -213,7 +218,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen bg-gray-100 relative">
       <div
         ref={messagesContainerRef}
         className="flex-1 overflow-auto flex flex-col-reverse"
@@ -267,6 +272,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
         <p className="text-xs text-center text-slate-500 mt-4">
           ChatPDF can make mistakes. Consider checking important information.
         </p>
+      </div>
+
+      <div className="absolute top-0 p-6 bg-white/50 shadow w-full flex justify-center">
+        <p className="text-xl font-semibold">{fileName}</p>{" "}
+        {/* Show the 'name' parameter from the URL */}
       </div>
     </div>
   );

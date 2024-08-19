@@ -72,7 +72,7 @@ const Sidebar = () => {
             .sort((a, b) => b.id - a.id)
             .map((chat) => (
               <li key={chat.id}>
-                <Link href={`/chat/${chat.id}`}>
+                <Link href={`/chat/${chat.id}?name=${chat.title}`}>
                   <Button
                     variant={"ghost"}
                     className={`${

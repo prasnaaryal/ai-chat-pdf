@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LuLogOut } from "react-icons/lu";
 import { useUser, SignOutButton } from "@clerk/nextjs";
-import { Skeleton } from "@/components/ui/skeleton"; // Adjust the path as necessary
+import { Skeleton } from "@/components/ui/skeleton";
+import { IoAdd } from "react-icons/io5";
+
 import axiosConfig from "@/config/axios";
 
 const Sidebar = () => {
@@ -50,6 +52,17 @@ const Sidebar = () => {
         <div className="flex items-center space-x-2">
           <span className="font-bold text-xl">AI Chat</span>
         </div>
+
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          onClick={() => {
+            window.location.href = "/upload";
+          }}
+          className="cursor-pointer"
+        >
+          <IoAdd className="w-6 h-6" />
+        </Button>
       </div>
 
       {/* Chat History Section */}

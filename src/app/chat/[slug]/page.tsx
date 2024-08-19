@@ -292,7 +292,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              onInput={handleInput}
+              onInput={handleInput} 
               className="flex-1 w-full px-4 py-2 border border-gray-300 rounded-lg resize-none overflow-hidden"
               placeholder="Send a message"
               rows={1}

@@ -11,76 +11,55 @@ const Upload = () => {
   const handleFileSelected = useCallback(
     async (file: File | null) => {
       if (file) {
-        console.log("File selected:", file); // Debugging log
+        console.log("File selected:", file);
         setFile(file);
 
         try {
-          // Prepare the data for presigned URL generation
-          const payload = {
-            filename: file.name,
-            content_type: file.type,
-          };
+          const formData = new FormData();
+          formData.append("file", file);
 
-          console.log("Payload for presigned URL:", payload); // Debugging log
+          console.log("Uploading file to backend");
 
-          // Call the API to generate the presigned URL
-          const presignedResponse = await axiosConfig.post(
-            "/generate-presigned-url/",
-            payload
+          const uploadResponse = await axiosConfig.post(
+            "generate-presigned-url/",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
           );
 
-          console.log("Presigned URL response:", presignedResponse.data); // Debugging log
+          if (uploadResponse.status === 200) {
+            const { id, file_name } = uploadResponse.data;
+            console.log("File uploaded successfully:", uploadResponse.data);
 
-          // Extract URL and key from the response
-          let { url, key } = presignedResponse.data;
+            const chatPayload = {
+              id: id,
+            };
 
-          if (url) {
-            // Upload the file to S3 using the presigned URL
-            const uploadResponse = await axiosConfig.put(url, file, {
+            const chatResponse = await axiosConfig.post("/chat/", chatPayload, {
               headers: {
-                "Content-Type": file.type,
+                "Content-Type": "multipart/form-data",
               },
             });
 
-            console.log("File uploaded successfully:", uploadResponse.status); // Debugging log
+            if (chatResponse.status === 200) {
+              console.log("Chat created:", chatResponse.data);
 
-            if (uploadResponse.status === 200) {
-              // Remove the 'upload/' prefix from the key
-              const cleanedKey = key.replace(/^uploads\//, "");
-
-              console.log("Cleaned Key:", cleanedKey); // Debugging log
-
-              // Construct the request URL for the chat creation
-              const requestUrl = `/chat/?file_key=${key}`;
-
-              console.log("Request URL:", requestUrl); // Debugging log
-
-              // Send the file_key as a query parameter in the /chat POST request
-              const chatResponse = await axiosConfig.post(requestUrl, null, {
-                maxRedirects: 0, // Disable automatic redirects
-              });
-
-              if (chatResponse.status === 307) {
-                console.log("307 Temporary Redirect:", chatResponse.data);
-                // Handle the redirect response, or use the data as needed
-              } else {
-                console.log("Chat created:", chatResponse.data); // Debugging log
-
-                // Redirect to the chat page using the id and cleaned key from the response
-                const chatId = chatResponse.data.id;
-                window.location.href = `/chat/${chatId}?name=${cleanedKey}`;
-              }
+              const chatId = chatResponse.data.id;
+              window.location.href = `/chat/${chatId}?name=${file_name}`;
             } else {
-              console.error("File upload failed");
+              console.error("Failed to create chat");
             }
           } else {
-            console.error("Invalid presigned URL response");
+            console.error("File upload failed");
           }
         } catch (error) {
           console.error("Error during the file upload process:", error);
         }
       } else {
-        console.warn("No file selected"); // Debugging log
+        console.warn("No file selected");
       }
     },
     [setFile]

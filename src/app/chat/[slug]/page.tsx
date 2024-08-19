@@ -51,7 +51,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ params }) => {
     const fetchChatHistory = async () => {
       try {
         const response = await axiosConfig.get(
-          `/conversation/?chat_id=${chatId}`
+          `/all-chats/?chat_id=${chatId}`
         );
         const chatHistory = response.data.flatMap((msg: any) => [
           {
